@@ -21,7 +21,6 @@
 *.hlsl                  text linguist-language=hlsl
 *.raytrace              text linguist-language=hlsl
 *.shader                text
-*.asset eol=lf -text
 
 # Unity JSON files
 *.asmdef                unity-json
@@ -38,7 +37,7 @@
 
 # Unity YAML files
 *.anim                  unity-yaml
-*.asset                 unity-yaml
+*.asset                 eol=lf -text
 *.brush                 unity-yaml
 *.controller            unity-yaml
 *.flare                 unity-yaml
