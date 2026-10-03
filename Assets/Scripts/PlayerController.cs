@@ -66,11 +66,11 @@ public class PlayerController : MonoBehaviour
         // Only apply y value to camera since the player will otherwise fall over
         
         //Player should not be allowed to rotate their camera 360 degrees up and down
-        Debug.Log("Rotation is: " + _input.camera.transform.rotation.eulerAngles);
+        // Debug.Log("Rotation is: " + _input.camera.transform.rotation.eulerAngles);
         var newRotation = _input.camera.transform.rotation.x + (-direction.y);
         if (newRotation > -1.5 && newRotation < 1.5)
         {
-            Debug.Log("New Rotation is: " + newRotation);
+            // Debug.Log("New Rotation is: " + newRotation);
             _rotation = new Vector3(-direction.y, 0f, 0f);
         }
     }
