@@ -12,19 +12,24 @@ public class PlayerController : MonoBehaviour
     private Vector3 _rotation;
     
     private PlayerInput _input;
+    private CharacterController _controller;
 
     // private Vector2 rotation;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        _controller = gameObject.GetComponent<CharacterController>();
         _input = gameObject.GetComponent<PlayerInput>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(_horizontalInput * Time.deltaTime * speed * Vector3.right);
-        transform.Translate(_verticalInput * Time.deltaTime * speed * Vector3.forward);
+        var turning = _horizontalInput * speed * Vector3.right;
+        var forward = _verticalInput * speed * Vector3.forward;
+        _controller.Move(new Vector3(turning.x + forward.x , _controller.isGrounded ? 0.0f : -32.0f, 
+                         forward.z + turning.z) * Time.deltaTime);
+        transform.rotation = _input.camera.transform.rotation;
         _input.camera.transform.Rotate(_rotation);
     }
 
@@ -62,7 +67,7 @@ public class PlayerController : MonoBehaviour
         // Debug.Log("Direction is: " + direction);
         // X is the value that determines Left and right (+1 = Left, -1 = Right)
         _rotation = new Vector3();
-        transform.Rotate(new Vector3(0f, direction.x,0f));
+        _controller.transform.Rotate(new Vector3(0f, direction.x,0f));
         // Only apply y value to camera since the player will otherwise fall over
         
         //Player should not be allowed to rotate their camera 360 degrees up and down
