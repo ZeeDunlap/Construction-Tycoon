@@ -13,48 +13,23 @@ public class BoardManager : MonoBehaviour
     private static int boardSize = 5;
     private GameObject[,] board = new GameObject[boardSize, boardSize];
     private List<PipeController> frontier = new List<PipeController>();
+    private GameObject startPipe;
     private GameObject endPipe;
 
     public GameObject completeButton;
     public List<GameObject> pipes;
+    public GameObject center;
 
+
+    private void OnEnable()
+    {
+        startGame();
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // put the start at a random location on the left
-        int randRow = Random.Range(0, boardSize);
-        GameObject startPipe =  Instantiate(pipes[pipes.Count - 1], new Vector3(-1 * boardSize - 1, (randRow - boardSize / 2) * 2, 0),
-            Quaternion.Euler(0, 0, 90));
-        startPipe.GetComponent<PipeController>().start = true;
-        startPipe.GetComponent<PipeController>().coordinates[0] = randRow;
-        startPipe.GetComponent<PipeController>().coordinates[1] = -1;
-        startPipe.GetComponent<PipeController>().setOutlets(new bool[] { false, true, false, false });
-
-        // put the end at a random location on the right
-        randRow = Random.Range(0, boardSize);
-        endPipe = Instantiate(pipes[pipes.Count - 1], new Vector3(boardSize + 1, (randRow - boardSize / 2) * 2, 0),
-            Quaternion.Euler(0, 0, -90));
-        endPipe.GetComponent<PipeController>().end = true;
-        endPipe.GetComponent<PipeController>().coordinates[0] = randRow;
-        endPipe.GetComponent<PipeController>().coordinates[1] = boardSize;
-        endPipe.GetComponent<PipeController>().setOutlets(new bool[] {false,false,false,true});
-
-        // fill the board with random pipes
-        GameObject pipe;
-        for (int row = 0; row < boardSize; row++)
-        {
-            for (int column = 0; column < boardSize; column++)
-            {
-                Vector3 coordinates = new Vector3((column - boardSize / 2) * 2, (row - boardSize / 2) * 2, 0);
-                pipe = Instantiate(pipes[Random.Range(0, pipes.Count - 1)], coordinates, Quaternion.Euler(0, 0, 0));
-                board[row, column] = pipe;
-                pipe.GetComponent<PipeController>().startNode = startPipe.GetComponent<PipeController>();
-                pipe.GetComponent<PipeController>().coordinates[0] = row;
-                pipe.GetComponent<PipeController>().coordinates[1] = column;
-            }
-        }
-
+        
     }
 
     // Update is called once per frame
@@ -162,8 +137,62 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    /*
     public void RestartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    */
+    public void RestartGame()
+    {
+        foreach (GameObject pipe in board)
+        {
+            Destroy(pipe);
+            completeButton.SetActive(false);
+        }
+        Destroy(startPipe);
+        Destroy(endPipe);
+        startGame();
+    }
+
+    public void startGame()
+    {
+                // put the start at a random location on the left
+        int randRow = Random.Range(0, boardSize);
+        startPipe = Instantiate(pipes[pipes.Count - 1], 
+            new Vector3(-1 * boardSize - 1, (randRow - boardSize / 2) * 2, 10) + center.transform.position,
+            Quaternion.Euler(0, 0, 90), GetComponent<Transform>());
+
+        startPipe.GetComponent<PipeController>().start = true;
+        startPipe.GetComponent<PipeController>().coordinates[0] = randRow;
+        startPipe.GetComponent<PipeController>().coordinates[1] = -1;
+        startPipe.GetComponent<PipeController>().setOutlets(new bool[] { false, true, false, false });
+        
+        // put the end at a random location on the right
+        randRow = Random.Range(0, boardSize);
+        endPipe = Instantiate(pipes[pipes.Count - 1], 
+            new Vector3(boardSize + 1, (randRow - boardSize / 2) * 2, 10) + center.transform.position,
+            Quaternion.Euler(0, 0, -90), GetComponent<Transform>());
+        endPipe.GetComponent<PipeController>().end = true;
+        endPipe.GetComponent<PipeController>().coordinates[0] = randRow;
+        endPipe.GetComponent<PipeController>().coordinates[1] = boardSize;
+        endPipe.GetComponent<PipeController>().setOutlets(new bool[] { false, false, false, true });
+        
+        // fill the board with random pipes
+        GameObject pipe;
+        for (int row = 0; row < boardSize; row++)
+        {
+            for (int column = 0; column < boardSize; column++)
+            {
+                Vector3 coordinates = new Vector3((column - boardSize / 2) * 2, (row - boardSize / 2) * 2, 10);
+                pipe = Instantiate(pipes[Random.Range(0, pipes.Count - 1)],
+                    coordinates + center.transform.position,
+                    Quaternion.identity, GetComponent<Transform>());
+                pipe.GetComponent<PipeController>().startNode = startPipe.GetComponent<PipeController>();
+                pipe.GetComponent<PipeController>().coordinates[0] = row;
+                pipe.GetComponent<PipeController>().coordinates[1] = column;
+                board[row, column] = pipe;
+            }
+        }
     }
 }

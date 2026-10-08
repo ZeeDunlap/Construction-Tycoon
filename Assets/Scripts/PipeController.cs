@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,11 +12,15 @@ public class PipeController : MonoBehaviour
     // an array that holds which direction water can flow through
     private bool[] outlets = new bool[4];
 
+    private Camera camera;
+    private Canvas canvas;
+
     // attributes that are used to check if a path from start to end has been craeted
     public bool start;
     public bool end;
     public int[] coordinates = new int[2];
     public bool isTraversed = false;
+
     public PipeController parent;
     public PipeController startNode;
     public BoardManager boardManager;
@@ -23,6 +28,16 @@ public class PipeController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // scale the size of the pipes based on the size of the UI
+        canvas = GetComponentInParent<Canvas>();
+        float scale = 1 / canvas.transform.localScale.x;
+        transform.localScale = new Vector3(scale, scale, scale);
+
+        boardManager = GameObject.Find("Plumbing Board").GetComponent<BoardManager>();
+        camera = GameObject.FindWithTag("MinigameCamera").GetComponent<Camera>();
+
+        // set the outlets of the pipes based on how many they have
+        // the outlets determine if two pipes are connected two each other instead of just beside each other
         if (name.Equals("Pipe Straight(Clone)"))
         {
             outlets[UP] = true;
@@ -61,7 +76,6 @@ public class PipeController : MonoBehaviour
             RotatePipe();
         }
 
-        boardManager = GameObject.Find("Board").GetComponent<BoardManager>();
     }
 
     // Update is called once per frame
@@ -69,7 +83,7 @@ public class PipeController : MonoBehaviour
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+            Ray ray = camera.ScreenPointToRay(Mouse.current.position.ReadValue());
             Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red, 2f);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
@@ -77,6 +91,7 @@ public class PipeController : MonoBehaviour
                 if (hit.transform == transform)
                 {
                     RotatePipe();
+                    // check if a path has been completed
                     if (boardManager.TraverseTree(startNode))
                     {
                         Debug.Log("Path Complete");
