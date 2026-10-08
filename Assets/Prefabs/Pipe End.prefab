@@ -272,7 +272,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2be61b1d991635488ec95192dfe005f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PipeController
-  outlets: 00010001y
   start: 0
   end: 0
   coordinates: 0200000005000000i
